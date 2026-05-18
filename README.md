@@ -100,6 +100,10 @@ app/
 - **Checkout**: [http://localhost:8000/checkout](http://localhost:8000/checkout)
 - **Login / Register**: [http://localhost:8000/login](http://localhost:8000/login)
 
+### 🚀 Production Portal (Railway Live)
+- **Production URL**: [https://grocerease.up.railway.app/](https://grocerease.up.railway.app/)
+- **Admin Dashboard**: [https://grocerease.up.railway.app/admin](https://grocerease.up.railway.app/admin)
+
 ### 👑 Enterprise Control (Admin Restricted)
 *Must log in as an administrator (credentials provided below).*
 - **Admin Dashboard**: [http://localhost:8000/admin](http://localhost:8000/admin)
