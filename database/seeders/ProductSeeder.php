@@ -179,10 +179,9 @@ class ProductSeeder extends Seeder
             ]);
 
             foreach ($data['images'] as $index => $imageName) {
-                // We'll just mock the image paths since actual files aren't physically present in storage
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image_path' => "legacy_images/{$imageName}",
+                    'image_path' => "products/migrated/{$imageName}",
                     'is_primary' => $index === 0
                 ]);
             }

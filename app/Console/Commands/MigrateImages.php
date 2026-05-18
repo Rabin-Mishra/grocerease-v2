@@ -33,9 +33,9 @@ class MigrateImages extends Command
         // Path to the legacy image directory
         $legacyDir = base_path('../GrocerEase-Website/admin_area/product_images/');
 
-        if (!is_dir($legacyDir)) {
-            $this->error("Legacy images directory not found at: {$legacyDir}");
-            return Command::FAILURE;
+        $legacyDirExists = is_dir($legacyDir);
+        if (!$legacyDirExists) {
+            $this->warn("Legacy images directory not found at: {$legacyDir}. Only already-uploaded target files will be linked.");
         }
 
         $images = ProductImage::all();
@@ -51,10 +51,18 @@ class MigrateImages extends Command
             if (!Str::contains($path, '/') || Str::startsWith($path, 'legacy_images/')) {
                 $filename = basename($path);
                 $sourceFile = $legacyDir . $filename;
+                $targetPath = "products/migrated/{$filename}";
 
-                if (file_exists($sourceFile)) {
-                    $targetPath = "products/migrated/{$filename}";
-
+                // 1. If target file already exists in our storage, we just update the DB
+                if ($disk->exists($targetPath)) {
+                    $img->update([
+                        'image_path' => $targetPath
+                    ]);
+                    $this->line("Found in target storage: {$filename} -> updated database path.");
+                    $migratedCount++;
+                }
+                // 2. If target file doesn't exist but the legacy source file is available, migrate it
+                elseif (file_exists($sourceFile)) {
                     // Put content to default storage disk
                     $disk->put($targetPath, file_get_contents($sourceFile));
 
@@ -63,7 +71,7 @@ class MigrateImages extends Command
                         'image_path' => $targetPath
                     ]);
 
-                    $this->line("Migrated: {$filename} -> {$targetPath}");
+                    $this->line("Migrated from legacy source: {$filename} -> {$targetPath}");
                     $migratedCount++;
                 } else {
                     $this->warn("Source file not found for: {$filename}");
